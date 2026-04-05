@@ -5,14 +5,16 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const RUTA = join(__dirname, '..', 'settings.json');
 
-  const DEFAULT = { status: null, prefixes: {}, logKeyChannels: {}, logTicketChannels: {}, ticketCounters: {} };
+  const DEFAULT = {
+    status: null, prefixes: {}, logKeyChannels: {},
+    logTicketOpenChannels: {}, logTicketCloseChannels: {}, ticketCounters: {},
+  };
 
   function cargar() {
     if (!existsSync(RUTA)) return { ...DEFAULT };
     try { return JSON.parse(readFileSync(RUTA, 'utf-8')); }
     catch { return { ...DEFAULT }; }
   }
-
   function guardar(data) { writeFileSync(RUTA, JSON.stringify(data, null, 2), 'utf-8'); }
 
   export function getPrefix(guildId) { return cargar().prefixes?.[guildId] || '!'; }
@@ -35,13 +37,24 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
     guardar(s);
   }
 
-  export function getLogTicketChannel(guildId) { return cargar().logTicketChannels?.[guildId] || null; }
-  export function setLogTicketChannel(guildId, channelId) {
-    const s = cargar(); if (!s.logTicketChannels) s.logTicketChannels = {};
-    if (channelId === null) delete s.logTicketChannels[guildId];
-    else s.logTicketChannels[guildId] = channelId;
+  export function getLogTicketOpenChannel(guildId) { return cargar().logTicketOpenChannels?.[guildId] || null; }
+  export function setLogTicketOpenChannel(guildId, channelId) {
+    const s = cargar(); if (!s.logTicketOpenChannels) s.logTicketOpenChannels = {};
+    if (channelId === null) delete s.logTicketOpenChannels[guildId];
+    else s.logTicketOpenChannels[guildId] = channelId;
     guardar(s);
   }
+
+  export function getLogTicketCloseChannel(guildId) { return cargar().logTicketCloseChannels?.[guildId] || null; }
+  export function setLogTicketCloseChannel(guildId, channelId) {
+    const s = cargar(); if (!s.logTicketCloseChannels) s.logTicketCloseChannels = {};
+    if (channelId === null) delete s.logTicketCloseChannels[guildId];
+    else s.logTicketCloseChannels[guildId] = channelId;
+    guardar(s);
+  }
+
+  export function getLogTicketChannel(guildId) { return getLogTicketOpenChannel(guildId); }
+  export function setLogTicketChannel(guildId, channelId) { setLogTicketOpenChannel(guildId, channelId); }
 
   export function getNextTicketNumber(guildId) {
     const s = cargar(); if (!s.ticketCounters) s.ticketCounters = {};
