@@ -1,22 +1,38 @@
-export default {
-  name: 'messageCreate',
-  once: false,
+import { tieneAcceso } from '../utils/accesos.js';
+  import { getPrivado } from '../utils/estadoGlobal.js';
+  import { getPrefix } from '../utils/settings.js';
 
-  async execute(client, message) {
-    if (message.author.bot) return;
-    if (!message.content.startsWith(client.prefix)) return;
+  export default {
+    name: 'messageCreate',
+    once: false,
 
-    const args = message.content.slice(client.prefix.length).trim().split(/\s+/);
-    const nombreComando = args.shift().toLowerCase();
+    async execute(client, message) {
+      if (message.author.bot) return;
 
-    const comando = client.prefixCommands.get(nombreComando);
-    if (!comando) return;
+      const prefix = message.guild ? getPrefix(message.guild.id) : client.prefix;
+      if (!message.content.startsWith(prefix)) return;
 
-    try {
-      await comando.ejecutar({ client, message, args });
-    } catch (err) {
-      console.error(`[ERROR] Prefix /${nombreComando}:`, err);
-      message.reply('❌ Ocurrió un error al ejecutar el comando.').catch(() => {});
-    }
-  },
-};
+      if (getPrivado() && message.author.id !== client.ownerId) return;
+
+      const args = message.content.slice(prefix.length).trim().split(/\s+/);
+      const nombreComando = args.shift().toLowerCase();
+
+      const comando = client.prefixCommands.get(nombreComando);
+      if (!comando) return;
+
+      if (comando.owner) {
+        const autorizado = tieneAcceso(message.author.id, comando.nombre, client.ownerId);
+        if (!autorizado) {
+          return message.reply('❌ No tienes permiso para usar este comando.');
+        }
+      }
+
+      try {
+        await comando.ejecutar({ client, message, args });
+      } catch (err) {
+        console.error(`[ERROR] Al ejecutar ${nombreComando}:`, err);
+        message.reply('❌ Ocurrió un error al ejecutar el comando.').catch(() => {});
+      }
+    },
+  };
+  
