@@ -6,7 +6,7 @@ import { ChannelType, EmbedBuilder, PermissionsBitField } from 'discord.js';
     descripcion: 'Crea la categoría de logs y configura los canales automáticamente',
     categoria: 'owner',
 
-    async ejecutar(message) {
+    async ejecutar({ client, message, args }) {
       if (!message.guild) return;
 
       const botMember = message.guild.members.me;
