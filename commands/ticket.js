@@ -6,8 +6,6 @@ import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, But
       .setDescription('Envía el panel para crear un ticket de soporte'),
 
     async execute(interaction) {
-      console.log('[TICKET] Ejecutando nuevo código v2 - DOS BOTONES');
-
       const adminRoleId = process.env.DISCORD_ADMIN_ROLE_ID;
       const ownerId     = process.env.DISCORD_OWNER_ID;
       const isOwner = interaction.user.id === ownerId;
