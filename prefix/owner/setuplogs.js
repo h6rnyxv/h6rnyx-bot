@@ -1,9 +1,9 @@
 import { ChannelType, EmbedBuilder, PermissionsBitField } from 'discord.js';
-  import { setLogKeyChannel, setLogTicketChannel } from '../../utils/settings.js';
+  import { setLogKeyChannel, setLogTicketOpenChannel, setLogTicketCloseChannel } from '../../utils/settings.js';
 
   export default {
     nombre: 'setuplogs',
-    descripcion: 'Crea la categoría de logs y configura los canales automáticamente',
+    descripcion: 'Crea los canales de log y los configura automáticamente',
     categoria: 'owner',
 
     async ejecutar({ client, message, args }) {
@@ -16,7 +16,6 @@ import { ChannelType, EmbedBuilder, PermissionsBitField } from 'discord.js';
       const msg = await message.reply('⏳ Creando canales de logs...');
 
       try {
-        // Categoría
         const categoria = await message.guild.channels.create({
           name: '📋 logs',
           type: ChannelType.GuildCategory,
@@ -26,39 +25,32 @@ import { ChannelType, EmbedBuilder, PermissionsBitField } from 'discord.js';
           ],
         });
 
-        // Canal key-logs
-        const keyLog = await message.guild.channels.create({
-          name: 'key-logs',
-          type: ChannelType.GuildText,
-          parent: categoria.id,
+        const crearCanal = (name) => message.guild.channels.create({
+          name, type: ChannelType.GuildText, parent: categoria.id,
           permissionOverwrites: [
             { id: message.guild.roles.everyone.id, deny: [PermissionsBitField.Flags.ViewChannel] },
             { id: botMember.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
           ],
         });
 
-        // Canal ticket-logs
-        const ticketLog = await message.guild.channels.create({
-          name: 'ticket-logs',
-          type: ChannelType.GuildText,
-          parent: categoria.id,
-          permissionOverwrites: [
-            { id: message.guild.roles.everyone.id, deny: [PermissionsBitField.Flags.ViewChannel] },
-            { id: botMember.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
-          ],
-        });
+        const [keyLog, ticketAbierto, ticketCerrado] = await Promise.all([
+          crearCanal('key-logs'),
+          crearCanal('ticket-abiertos'),
+          crearCanal('ticket-cerrados'),
+        ]);
 
-        // Guardar en settings
         setLogKeyChannel(message.guild.id, keyLog.id);
-        setLogTicketChannel(message.guild.id, ticketLog.id);
+        setLogTicketOpenChannel(message.guild.id, ticketAbierto.id);
+        setLogTicketCloseChannel(message.guild.id, ticketCerrado.id);
 
         const embed = new EmbedBuilder()
           .setTitle('✅ Logs configurados')
           .setColor(0x57f287)
-          .setDescription('Se crearon los canales de log y se asignaron automáticamente.')
+          .setDescription('Canales creados y configurados automáticamente.')
           .addFields(
-            { name: '🔑 Key Logs',    value: `<#${keyLog.id}>`,    inline: true },
-            { name: '🎫 Ticket Logs', value: `<#${ticketLog.id}>`, inline: true },
+            { name: '🔑 Key Logs',         value: `<#${keyLog.id}>`,        inline: true },
+            { name: '🎫 Tickets Abiertos', value: `<#${ticketAbierto.id}>`, inline: true },
+            { name: '🔒 Tickets Cerrados', value: `<#${ticketCerrado.id}>`, inline: true },
           )
           .setFooter({ text: `Categoría: ${categoria.name}` })
           .setTimestamp();
@@ -66,7 +58,7 @@ import { ChannelType, EmbedBuilder, PermissionsBitField } from 'discord.js';
         await msg.edit({ content: '', embeds: [embed] });
       } catch (e) {
         console.error('[SETUPLOGS]', e);
-        await msg.edit('❌ Error al crear los canales: ' + e.message);
+        await msg.edit('❌ Error: ' + e.message);
       }
     },
   };
