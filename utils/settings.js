@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
   const __dirname = dirname(fileURLToPath(import.meta.url));
   const RUTA = join(__dirname, '..', 'settings.json');
 
-  const DEFAULT = { status: null, prefixes: {} };
+  const DEFAULT = { status: null, prefixes: {}, logKeyChannels: {} };
 
   function cargar() {
     if (!existsSync(RUTA)) return { ...DEFAULT };
@@ -45,6 +45,22 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
   export function clearStatus() {
     const s = cargar();
     s.status = null;
+    guardar(s);
+  }
+
+  export function getLogKeyChannel(guildId) {
+    const s = cargar();
+    return s.logKeyChannels?.[guildId] || null;
+  }
+
+  export function setLogKeyChannel(guildId, channelId) {
+    const s = cargar();
+    if (!s.logKeyChannels) s.logKeyChannels = {};
+    if (channelId === null) {
+      delete s.logKeyChannels[guildId];
+    } else {
+      s.logKeyChannels[guildId] = channelId;
+    }
     guardar(s);
   }
   
