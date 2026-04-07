@@ -9,6 +9,9 @@ const piropos = [
 
 export default {
   nombre: 'piropo',
+  descripcion: 'Envía un piropo a un usuario.',
+  owner: false,
+
   async ejecutar({ message }) {
     const user = message.mentions.users.first() || message.author;
     const piropo = piropos[Math.floor(Math.random() * piropos.length)];
