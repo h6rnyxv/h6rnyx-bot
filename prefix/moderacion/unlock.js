@@ -1,8 +1,12 @@
 export default {
   nombre: 'unlock',
+  descripcion: 'Desbloquea el canal actual.',
+  owner: false,
+
   async ejecutar({ message }) {
     if (!message.member.permissions.has('ManageChannels'))
       return message.reply('❌ No tienes permiso para desbloquear canales.');
+
     try {
       await message.channel.permissionOverwrites.edit(message.guild.roles.everyone, { SendMessages: true });
       message.channel.send('🔓 Este canal ha sido desbloqueado.');
