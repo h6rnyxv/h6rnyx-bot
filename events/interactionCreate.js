@@ -50,49 +50,74 @@ import {
     const p = client.prefix;
     const valor = interaction.values[0];
     const categorias = {
-      diversion: {
-        titulo: '🎉 Diversión', color: 0xff69b4,
-        comandos: [
-          `\`${p}8ball <pregunta>\` — La bola mágica responde.`,
-          `\`${p}abrazo @usuario\` — Abrazas a alguien.`,
-          `\`${p}beso @usuario\` — Besas a alguien.`,
-          `\`${p}chiste\` — Chiste aleatorio.`,
-          `\`${p}dado [caras]\` — Lanza un dado.`,
-          `\`${p}howgay [@usuario]\` — ¿Qué tan gay eres? (broma).`,
-          `\`${p}meme\` — Meme aleatorio.`,
-          `\`${p}piropo [@usuario]\` — Lanza un piropo.`,
-          `\`${p}say <texto>\` — El bot repite lo que escribas.`,
-          `\`${p}ship @user1 @user2\` — Compatibilidad entre dos personas.`,
-          `\`${p}teamo\` — El bot te responde con cariño.`,
-        ],
-      },
-      moderacion: {
-        titulo: '🛡️ Moderación', color: 0x5865f2,
-        comandos: [
-          `\`${p}ban @usuario [razón]\` — Banea a un usuario.`,
-          `\`${p}kick @usuario [razón]\` — Expulsa a un usuario.`,
-          `\`${p}mute @usuario [minutos]\` — Silencia a un usuario.`,
-          `\`${p}unmute @usuario\` — Desmutea a un usuario.`,
-          `\`${p}warn @usuario [razón]\` — Advierte a un usuario.`,
-          `\`${p}clear <cantidad>\` — Borra mensajes (1–100).`,
-          `\`${p}lock\` — Bloquea el canal.`,
-          `\`${p}unlock\` — Desbloquea el canal.`,
-          `\`${p}slowmode <segundos>\` — Slowmode (0 = desactivar).`,
-          `\`${p}nuke\` — Reinicia el canal clonándolo.`,
-        ],
-      },
-      general: {
-        titulo: '🛠️ General', color: 0x57f287,
-        comandos: [
-          `\`${p}ping\` — Latencia del bot.`,
-          `\`${p}help\` — Muestra este menú.`,
-          `\`${p}avatar [@usuario]\` — Avatar de un usuario.`,
-          `\`${p}userinfo [@usuario]\` — Info de un usuario.`,
-          `\`${p}serverinfo\` — Info del servidor.`,
-        ],
-      },
-    };
-    const cat = categorias[valor];
+        diversion: {
+          titulo: '🎉 Diversión', color: 0xff69b4,
+          comandos: [
+            `\`${p}8ball <pregunta>\` — La bola mágica responde.`,
+            `\`${p}abrazo @usuario\` — Abrazas a alguien.`,
+            `\`${p}beso @usuario\` — Besas a alguien.`,
+            `\`${p}chiste\` — Chiste aleatorio.`,
+            `\`${p}dado [caras]\` — Lanza un dado.`,
+            `\`${p}howgay [@usuario]\` — ¿Qué tan gay eres? (broma).`,
+            `\`${p}meme\` — Meme aleatorio.`,
+            `\`${p}piropo [@usuario]\` — Lanza un piropo.`,
+            `\`${p}say <texto>\` — El bot repite lo que escribas.`,
+            `\`${p}ship @user1 @user2\` — Compatibilidad entre dos personas.`,
+            `\`${p}teamo\` — El bot te responde con cariño.`,
+          ],
+        },
+        moderacion: {
+          titulo: '🛡️ Moderación', color: 0x5865f2,
+          comandos: [
+            `\`${p}ban @usuario [razón]\` — Banea a un usuario.`,
+            `\`${p}kick @usuario [razón]\` — Expulsa a un usuario.`,
+            `\`${p}mute @usuario [minutos]\` — Silencia a un usuario.`,
+            `\`${p}unmute @usuario\` — Desmutea a un usuario.`,
+            `\`${p}warn @usuario [razón]\` — Advierte a un usuario.`,
+            `\`${p}clear <cantidad>\` — Borra mensajes (1–100).`,
+            `\`${p}lock\` — Bloquea el canal.`,
+            `\`${p}unlock\` — Desbloquea el canal.`,
+            `\`${p}slowmode <segundos>\` — Slowmode (0 = desactivar).`,
+            `\`${p}nuke\` — Reinicia el canal clonándolo.`,
+          ],
+        },
+        utilidad: {
+          titulo: '🛠️ Utilidad', color: 0xffa500,
+          comandos: [
+            `\`${p}decir <texto>\` — El bot dice algo en el canal.`,
+            `\`${p}deciren #canal <texto>\` — Dice algo en otro canal.`,
+            `\`${p}decirenembed #canal <texto>\` — Dice en embed en otro canal.`,
+            `\`${p}editarembed <msgId> <texto>\` — Edita un embed del bot.`,
+            `\`${p}embedcustom\` — Crea un embed personalizado.`,
+            `\`${p}fecha\` — Muestra la fecha y hora actual.`,
+            `\`${p}id [@usuario]\` — Muestra el ID de un usuario.`,
+            `\`${p}sugerencia <texto>\` — Envía una sugerencia.`,
+          ],
+        },
+        server: {
+          titulo: '⚙️ Servidor', color: 0x99aab5,
+          comandos: [
+            `\`${p}silenciar @usuario\` — Silencia a un usuario.`,
+            `\`${p}desilenciar @usuario\` — Desilencia a un usuario.`,
+            `\`${p}privar @usuario\` — Restringe acceso a canales.`,
+            `\`${p}desprivar @usuario\` — Restaura acceso a canales.`,
+            `\`${p}servertools\` — Herramientas del servidor.`,
+            `\`${p}viewrole @rol\` — Ver info de un rol.`,
+          ],
+        },
+        general: {
+          titulo: '📌 General', color: 0x57f287,
+          comandos: [
+            `\`${p}ping\` — Latencia del bot.`,
+            `\`${p}help\` — Muestra este menú.`,
+            `\`${p}avatar [@usuario]\` — Avatar de un usuario.`,
+            `\`${p}userinfo [@usuario]\` — Info de un usuario.`,
+            `\`${p}serverinfo\` — Info del servidor.`,
+            `\`${p}setprefix <nuevo>\` — Cambia el prefijo del bot.`,
+          ],
+        },
+      };
+      const cat = categorias[valor];
     if (!cat) return;
     const embed = new EmbedBuilder().setTitle(cat.titulo).setColor(cat.color)
       .setDescription(cat.comandos.join('\n')).setFooter({ text: `Prefix: ${p}` });
