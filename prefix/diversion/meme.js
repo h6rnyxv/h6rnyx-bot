@@ -8,6 +8,9 @@ const memes = [
 
 export default {
   nombre: 'meme',
+  descripcion: 'Envía un meme aleatorio.',
+  owner: false,
+
   async ejecutar({ message }) {
     const meme = memes[Math.floor(Math.random() * memes.length)];
     message.channel.send({ files: [meme] });
