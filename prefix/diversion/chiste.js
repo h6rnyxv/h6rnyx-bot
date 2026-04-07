@@ -11,6 +11,9 @@ const chistes = [
 
 export default {
   nombre: 'chiste',
+  descripcion: 'Cuenta un chiste aleatorio.',
+  owner: false,
+
   async ejecutar({ message }) {
     const chiste = chistes[Math.floor(Math.random() * chistes.length)];
     message.channel.send(`😄 ${chiste}`);
