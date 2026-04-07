@@ -6,7 +6,7 @@ import { EmbedBuilder } from 'discord.js';
   const EMBEDS = {
     '1': {
       label: 'getkey',
-      build: (img) => new EmbedBuilder()
+      build: () => new EmbedBuilder()
         .setTitle('🔑 Get Your Key — h6rnyxv Hub')
         .setColor(COLOR)
         .setFooter({ text: FOOTER })
@@ -27,12 +27,11 @@ import { EmbedBuilder } from 'discord.js';
           '📜 **Script:**\n' +
           '```\nloadstring(game:HttpGet("https://h6rnyx-keyserver.vercel.app/loader"))()\n```\n\n' +
           '-# If the script URL is wrong, contact staff to get the correct one.'
-        )
-        .setImage(img || null),
+        ),
     },
     '2': {
       label: 'rules',
-      build: (img) => new EmbedBuilder()
+      build: () => new EmbedBuilder()
         .setTitle('📜 Server Rules — h6rnyxv Hub')
         .setColor(COLOR)
         .setFooter({ text: FOOTER })
@@ -51,12 +50,11 @@ import { EmbedBuilder } from 'discord.js';
           '7.  No filtrar scripts de pago\n8.  No toxicidad ni odio\n9.  Sigue las reglas de Discord\n' +
           '10. No suplantacion de identidad\n11. Usa los canales correctos\n12. No sorteos falsos\n' +
           '13. No acoso de ningun tipo\n14. No vender sin permiso del staff\n15. Decisiones del staff son finales\n```'
-        )
-        .setImage(img || null),
+        ),
     },
     '3': {
       label: 'who-are-we',
-      build: (img) => new EmbedBuilder()
+      build: () => new EmbedBuilder()
         .setTitle('🌍 Who Are We? — ¿Quiénes Somos?')
         .setColor(COLOR)
         .setFooter({ text: FOOTER })
@@ -75,12 +73,11 @@ import { EmbedBuilder } from 'discord.js';
           '**Lo que ofrecemos:**\n' +
           '> 🔑  Keys exclusivas de scripts\n> 🛠️  Soporte activo 24/7\n' +
           '> 🧪  Leaks y previews de scripts\n> 💬  Comunidad bilingüe EN/ES\n> 📢  Actualizaciones constantes'
-        )
-        .setImage(img || null),
+        ),
     },
     '4': {
       label: 'hub-status',
-      build: (img) => new EmbedBuilder()
+      build: () => new EmbedBuilder()
         .setTitle('📊 Hub Status — h6rnyxv Hub')
         .setColor(COLOR)
         .setFooter({ text: FOOTER })
@@ -95,12 +92,9 @@ import { EmbedBuilder } from 'discord.js';
           '> 🟢  Script — **En línea**\n' +
           '> 🟢  Keyserver — **En línea**\n' +
           '> 🟢  Loader — **En línea**'
-        )
-        .setImage(img || null),
+        ),
     },
   };
-
-  const filter = m => m.author.id === null; // placeholder, overridden per use
 
   export default {
     nombre: 'enviarembeds',
@@ -108,42 +102,37 @@ import { EmbedBuilder } from 'discord.js';
     owner: true,
 
     async ejecutar({ message }) {
-      const ch      = message.channel;
+      const ch       = message.channel;
       const authorId = message.author.id;
       const colFilter = m => m.author.id === authorId && m.channel.id === ch.id;
-      const opts     = { filter: colFilter, max: 1, time: 60_000 };
+      const opts      = { filter: colFilter, max: 1, time: 60_000 };
 
-      // Step 1 — Pick embed
-      const menu = new EmbedBuilder()
-        .setTitle('📤 Enviar Embed')
-        .setColor(0x9b59b6)
-        .setDescription(
-          'Elige qué embed quieres enviar:\n\n' +
-          '**1** — 🔑 getkey\n' +
-          '**2** — 📜 rules\n' +
-          '**3** — 🌍 who-are-we\n' +
-          '**4** — 📊 hub-status\n\n' +
-          '-# Responde con el número o escribe `cancelar`.'
-        );
-      const m1 = await ch.send({ embeds: [menu] });
+      // ── Paso 1: elegir embed ───────────────────────────────────────────────
+      const m1 = await ch.send({ embeds: [
+        new EmbedBuilder().setColor(0x9b59b6).setTitle('📤 Enviar Embed')
+          .setDescription(
+            'Elige qué embed quieres enviar:\n\n' +
+            '**1** — 🔑 getkey\n**2** — 📜 rules\n**3** — 🌍 who-are-we\n**4** — 📊 hub-status\n\n' +
+            '-# Responde con el número o escribe `cancelar`.'
+          )
+      ] });
+
       const col1 = await ch.awaitMessages(opts).catch(() => null);
       const pick = col1?.first()?.content?.trim();
       await col1?.first()?.delete().catch(() => {});
-
-      if (!pick || pick.toLowerCase() === 'cancelar' || !EMBEDS[pick]) {
-        await m1.delete().catch(() => {});
-        return ch.send({ embeds: [new EmbedBuilder().setColor(0xed4245).setDescription('❌ Cancelado o selección inválida.')] });
-      }
       await m1.delete().catch(() => {});
 
-      // Step 2 — Ask for image
+      if (!pick || pick.toLowerCase() === 'cancelar' || !EMBEDS[pick]) {
+        return ch.send({ embeds: [new EmbedBuilder().setColor(0xed4245).setDescription('❌ Cancelado o selección inválida.')] });
+      }
+
+      // ── Paso 2: imagen ─────────────────────────────────────────────────────
       const m2 = await ch.send({ embeds: [
-        new EmbedBuilder()
-          .setColor(0x9b59b6)
+        new EmbedBuilder().setColor(0x9b59b6)
           .setDescription(
             '🖼️ **¿Quieres agregar una imagen?**\n\n' +
-            '• Pega una **URL de imagen** (https://...)\n' +
-            '• O sube una **imagen adjunta** a este mensaje\n' +
+            '• Sube una **imagen adjunta** a tu respuesta\n' +
+            '• O pega una **URL** (https://...)\n' +
             '• Escribe `no` para enviar **sin imagen**\n\n' +
             '-# Tienes 60 segundos.'
           )
@@ -153,29 +142,39 @@ import { EmbedBuilder } from 'discord.js';
       const imgMsg = col2?.first();
       await m2.delete().catch(() => {});
 
-      let imageUrl = null;
+      let imageFile  = null; // { buffer, name } para adjuntos subidos
+      let imageUrl   = null; // URL externa
 
       if (imgMsg) {
-        const txt = imgMsg.content?.trim().toLowerCase();
-        await imgMsg.delete().catch(() => {});
+        const txt = imgMsg.content?.trim().toLowerCase() || '';
 
         if (txt !== 'no' && txt !== 'cancelar') {
-          // Check for attachment first
           const attachment = imgMsg.attachments.first();
+
           if (attachment) {
-            imageUrl = attachment.url;
-          } else if (imgMsg.content?.startsWith('http')) {
+            // Descargar el archivo para resubirlo directamente con el embed
+            try {
+              const response = await fetch(attachment.url);
+              const buffer   = Buffer.from(await response.arrayBuffer());
+              imageFile = { buffer, name: attachment.name };
+            } catch {
+              await imgMsg.delete().catch(() => {});
+              return ch.send({ embeds: [new EmbedBuilder().setColor(0xed4245).setDescription('❌ No pude descargar la imagen. Intenta con una URL.')] });
+            }
+          } else if (imgMsg.content?.trim().startsWith('http')) {
             imageUrl = imgMsg.content.trim();
           } else {
+            await imgMsg.delete().catch(() => {});
             return ch.send({ embeds: [new EmbedBuilder().setColor(0xed4245).setDescription('❌ URL inválida. Operación cancelada.')] });
           }
         }
+
+        await imgMsg.delete().catch(() => {});
       }
 
-      // Step 3 — Ask for target channel
+      // ── Paso 3: canal destino ──────────────────────────────────────────────
       const m3 = await ch.send({ embeds: [
-        new EmbedBuilder()
-          .setColor(0x9b59b6)
+        new EmbedBuilder().setColor(0x9b59b6)
           .setDescription(
             '📢 **¿En qué canal lo envío?**\n\n' +
             '• Menciona el canal: `#canal`\n' +
@@ -198,15 +197,26 @@ import { EmbedBuilder } from 'discord.js';
         }
       }
 
-      // Send the embed
-      const embed = EMBEDS[pick].build(imageUrl);
-      await targetChannel.send({ embeds: [embed] });
+      // ── Enviar ─────────────────────────────────────────────────────────────
+      const embed = EMBEDS[pick].build();
 
-      // Confirm
+      if (imageFile) {
+        // Imagen subida: adjuntarla directamente al mensaje
+        embed.setImage(`attachment://${imageFile.name}`);
+        await targetChannel.send({
+          embeds: [embed],
+          files: [{ attachment: imageFile.buffer, name: imageFile.name }],
+        });
+      } else if (imageUrl) {
+        embed.setImage(imageUrl);
+        await targetChannel.send({ embeds: [embed] });
+      } else {
+        await targetChannel.send({ embeds: [embed] });
+      }
+
       const confirm = await ch.send({ embeds: [
-        new EmbedBuilder()
-          .setColor(0x57f287)
-          .setDescription(`✅ Embed **${EMBEDS[pick].label}** enviado en ${targetChannel}${imageUrl ? ' con imagen' : ' sin imagen'}.`)
+        new EmbedBuilder().setColor(0x57f287)
+          .setDescription(`✅ Embed **${EMBEDS[pick].label}** enviado en ${targetChannel}${imageFile || imageUrl ? ' con imagen' : ' sin imagen'}.`)
       ] });
       setTimeout(() => confirm.delete().catch(() => {}), 5000);
     },
