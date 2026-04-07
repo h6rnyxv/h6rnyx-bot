@@ -2,6 +2,9 @@ import { EmbedBuilder } from 'discord.js';
 
 export default {
   nombre: 'serverinfo',
+  descripcion: 'Muestra información del servidor.',
+  owner: false,
+
   async ejecutar({ message }) {
     const { guild } = message;
     const embed = new EmbedBuilder()
@@ -14,7 +17,8 @@ export default {
         { name: '📅 Creado', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true },
       )
       .setThumbnail(guild.iconURL({ dynamic: true }))
-      .setColor(0xffd700);
+      .setColor('Gold');
+
     message.channel.send({ embeds: [embed] });
   },
 };
