@@ -1,8 +1,12 @@
 export default {
   nombre: 'nuke',
+  descripcion: 'Clona y elimina el canal actual (como reiniciarlo).',
+  owner: false,
+
   async ejecutar({ message }) {
     if (!message.member.permissions.has('ManageChannels'))
       return message.reply('❌ No tienes permiso para usar este comando.');
+
     try {
       const posicion = message.channel.position;
       const canalNuevo = await message.channel.clone({ reason: `Nuke por ${message.author.tag}` });
