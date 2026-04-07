@@ -2,21 +2,23 @@ import { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } from 'discord
 
 export default {
   nombre: 'help',
-  async ejecutar({ client, message }) {
-    const p = client.prefix;
+  descripcion: 'Muestra el menú de ayuda con todas las categorías.',
+  owner: false,
 
+  async ejecutar({ client, message }) {
     const embed = new EmbedBuilder()
-      .setTitle('✨ Comandos del Bot')
-      .setColor('#5865F2')
+      .setTitle('✨ Comandos de Layout')
+      .setColor('#FFC0CB')
       .setDescription('Selecciona una categoría del menú para ver sus comandos.')
       .addFields(
         { name: '🎉 Diversión', value: '11 comandos', inline: true },
         { name: '🛡️ Moderación', value: '10 comandos', inline: true },
-        { name: '🛠️ General', value: '5 comandos', inline: true },
-        { name: '🔑 Owner (Slash)', value: '/genkey /revokekey /checkkey /ticket', inline: false },
+        { name: '🛠️ Utilidad', value: '9 comandos', inline: true },
+        { name: '⚙️ Gestión del Servidor', value: '6 comandos', inline: true },
+        { name: '📌 General', value: '2 comandos', inline: true },
       )
       .setFooter({
-        text: `${message.author.username} • Prefix: ${p}`,
+        text: `Solicitado por ${message.author.username} • Prefix: ${client.prefix}`,
         iconURL: message.author.displayAvatarURL(),
       });
 
@@ -26,8 +28,10 @@ export default {
         .setPlaceholder('📂 Selecciona una categoría...')
         .addOptions([
           { label: '🎉 Diversión', description: 'Comandos de entretenimiento', value: 'diversion', emoji: '🎉' },
-          { label: '🛡️ Moderación', description: 'Comandos de moderación', value: 'moderacion', emoji: '🛡️' },
-          { label: '🛠️ General', description: 'Comandos básicos', value: 'general', emoji: '🛠️' },
+          { label: '🛡️ Moderación', description: 'Comandos de moderación del servidor', value: 'moderacion', emoji: '🛡️' },
+          { label: '🛠️ Utilidad', description: 'Herramientas útiles', value: 'utilidad', emoji: '🛠️' },
+          { label: '⚙️ Gestión', description: 'Gestión de canales y roles', value: 'gestion', emoji: '⚙️' },
+          { label: '📌 General', description: 'Comandos básicos del bot', value: 'general', emoji: '📌' },
         ])
     );
 
