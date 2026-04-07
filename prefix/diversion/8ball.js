@@ -6,6 +6,9 @@ const respuestas = [
 
 export default {
   nombre: '8ball',
+  descripcion: 'Responde preguntas al azar.',
+  owner: false,
+
   async ejecutar({ message, args }) {
     const pregunta = args.join(' ');
     if (!pregunta) return message.reply('❓ Debes hacerme una pregunta.');
