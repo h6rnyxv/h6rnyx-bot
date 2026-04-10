@@ -1,12 +1,11 @@
 export default {
   nombre: 'reset',
-  descripcion: 'Borra todos los canales y roles del servidor y crea un #general. ¡IRREVERSIBLE!',
+  descripcion: 'Borra todos los canales y roles del servidor y crea un #general y voz. ¡IRREVERSIBLE!',
   owner: true,
 
   async ejecutar({ message }) {
     await message.author.send('⚠️ Reseteando servidor... esto puede tardar.').catch(() => {});
 
-    // Obtener canales frescos desde Discord
     const channels = await message.guild.channels.fetch().catch(() => null);
     if (channels) {
       for (const [, channel] of channels) {
@@ -14,7 +13,6 @@ export default {
       }
     }
 
-    // Obtener roles frescos y posición del bot
     const roles = await message.guild.roles.fetch().catch(() => null);
     const me = await message.guild.members.fetchMe().catch(() => null);
     const myHighestPosition = me?.roles?.highest?.position ?? 0;
@@ -29,6 +27,7 @@ export default {
     }
 
     await message.guild.channels.create({ name: 'general', type: 0 }).catch(() => {});
-    await message.author.send('✅ Servidor reseteado: queda @everyone y #general.').catch(() => {});
+    await message.guild.channels.create({ name: 'General', type: 2 }).catch(() => {});
+    await message.author.send('✅ Servidor reseteado: queda @everyone, #general y el canal de voz General.').catch(() => {});
   },
 };
