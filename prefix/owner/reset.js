@@ -6,13 +6,23 @@ export default {
   async ejecutar({ message }) {
     await message.author.send('⚠️ Reseteando servidor... esto puede tardar.').catch(() => {});
 
-    for (const [, channel] of message.guild.channels.cache) {
-      await channel.delete().catch(() => {});
+    // Obtener canales frescos desde Discord
+    const channels = await message.guild.channels.fetch().catch(() => null);
+    if (channels) {
+      for (const [, channel] of channels) {
+        if (channel) await channel.delete().catch(() => {});
+      }
     }
 
-    for (const [, role] of message.guild.roles.cache) {
-      if (role.name !== '@everyone' && !role.managed) {
-        if (role.position < message.guild.members.me.roles.highest.position) {
+    // Obtener roles frescos y posición del bot
+    const roles = await message.guild.roles.fetch().catch(() => null);
+    const me = await message.guild.members.fetchMe().catch(() => null);
+    const myHighestPosition = me?.roles?.highest?.position ?? 0;
+
+    if (roles) {
+      for (const [, role] of roles) {
+        if (!role || role.name === '@everyone' || role.managed) continue;
+        if (role.position < myHighestPosition) {
           await role.delete().catch(() => {});
         }
       }
