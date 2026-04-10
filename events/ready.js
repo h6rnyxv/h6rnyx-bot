@@ -1,3 +1,5 @@
+import { ActivityType } from 'discord.js';
+
 export default {
   name: 'clientReady',
   once: true,
@@ -5,13 +7,12 @@ export default {
   async execute(client) {
     console.log(`[BOT] ✅ Conectado como ${client.user.tag}`);
     console.log(`[BOT] Servidores: ${client.guilds.cache.size}`);
-    client.user.setActivity('h6rnyx KeyServer | /checkkey');
+    client.user.setActivity('My Prefix is !', { type: ActivityType.Watching });
 
     const { REST, Routes } = await import('discord.js');
     const { readdirSync } = await import('fs');
     const { join, dirname } = await import('path');
     const { fileURLToPath, pathToFileURL } = await import('url');
-    const { createRequire } = await import('module');
 
     const __dirname = dirname(fileURLToPath(import.meta.url));
     const commands = [];
