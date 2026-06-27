@@ -1,4 +1,13 @@
 import { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
+  import { COLORS } from '../../utils/embed.js';
+
+  const CATEGORIAS = {
+    diversion:  { label: '🎉 Diversión',   desc: 'Comandos de entretenimiento',    emoji: '🎉' },
+    moderacion: { label: '🛡️ Moderación',  desc: 'Gestión y moderación del servidor', emoji: '🛡️' },
+    utilidad:   { label: '🛠️ Utilidad',    desc: 'Herramientas útiles',            emoji: '🛠️' },
+    server:     { label: '⚙️ Servidor',    desc: 'Gestión de canales y roles',     emoji: '⚙️' },
+    general:    { label: '📌 General',     desc: 'Comandos básicos del bot',       emoji: '📌' },
+  };
 
   export default {
     nombre: 'help',
@@ -8,37 +17,39 @@ import { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } from 'discord
     async ejecutar({ client, message }) {
       const p = client.prefix;
 
+      // Contar comandos por categoría dinámicamente
+      const conteos = {};
+      for (const [cat] of Object.entries(CATEGORIAS)) conteos[cat] = 0;
+      for (const cmd of client.prefixCommands.values()) {
+        const cat = cmd.categoria ?? 'general';
+        if (conteos[cat] !== undefined) conteos[cat]++;
+      }
+
       const embed = new EmbedBuilder()
-        .setTitle('✨ Comandos del Bot')
-        .setColor('#5865F2')
-        .setDescription('Selecciona una categoría del menú para ver sus comandos.')
+        .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL() })
+        .setTitle('📚 Menú de Ayuda')
+        .setDescription(`Usa el menú para explorar los comandos. Prefijo actual: \`${p}\``)
+        .setColor(COLORS.primary)
         .addFields(
-          { name: '🎉 Diversión', value: '11 comandos', inline: true },
-          { name: '🛡️ Moderación', value: '10 comandos', inline: true },
-          { name: '🛠️ Utilidad', value: '8 comandos', inline: true },
-          { name: '⚙️ Servidor', value: '6 comandos', inline: true },
-          { name: '📌 General', value: '6 comandos', inline: true },
-          { name: '🔑 Owner (Slash)', value: '/genkey /revokekey /checkkey /ticket /verificar', inline: false },
+          Object.entries(CATEGORIAS).map(([key, val]) => ({
+            name: val.label,
+            value: `${conteos[key] || '?'} comandos`,
+            inline: true,
+          }))
         )
-        .setFooter({
-          text: `${message.author.username} • Prefix: ${p}`,
-          iconURL: message.author.displayAvatarURL(),
-        });
+        .addFields({ name: '🔑 Slash Commands', value: '/genkey · /revokekey · /checkkey · /ticket · /verificar', inline: false })
+        .setFooter({ text: `Solicitado por ${message.author.username}`, iconURL: message.author.displayAvatarURL() })
+        .setTimestamp();
 
       const menu = new ActionRowBuilder().addComponents(
         new StringSelectMenuBuilder()
           .setCustomId('select-categoria')
           .setPlaceholder('📂 Selecciona una categoría...')
-          .addOptions([
-            { label: '🎉 Diversión',  description: 'Comandos de entretenimiento',  value: 'diversion',  emoji: '🎉' },
-            { label: '🛡️ Moderación', description: 'Comandos de moderación',        value: 'moderacion', emoji: '🛡️' },
-            { label: '🛠️ Utilidad',   description: 'Herramientas útiles',           value: 'utilidad',   emoji: '🛠️' },
-            { label: '⚙️ Servidor',   description: 'Gestión de canales y roles',    value: 'server',     emoji: '⚙️' },
-            { label: '📌 General',    description: 'Comandos básicos del bot',      value: 'general',    emoji: '📌' },
-          ])
+          .addOptions(
+            Object.entries(CATEGORIAS).map(([value, { label, desc, emoji }]) => ({ label, description: desc, value, emoji }))
+          )
       );
 
       message.reply({ embeds: [embed], components: [menu] });
     },
   };
-  
