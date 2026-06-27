@@ -15,25 +15,23 @@ import { embed, errorEmbed, COLORS } from '../../utils/embed.js';
         return message.reply({ embeds: [errorEmbed('Menciona a un usuario para expulsar.', message.author)] });
 
       if (!miembro.kickable)
-        return message.reply({ embeds: [errorEmbed('No puedo expulsar a ese usuario (rol superior o igual al mío).', message.author)] });
+        return message.reply({ embeds: [errorEmbed('No puedo expulsar a ese usuario (su rol es igual o superior al mío).', message.author)] });
 
       const razon = args.slice(1).join(' ') || 'Sin razón especificada';
-
       try {
         await miembro.kick(razon);
         message.channel.send({ embeds: [embed({
           title: '👢 Usuario Expulsado',
           color: COLORS.mod,
           fields: [
-            { name: '👤 Usuario', value: `${miembro.user} (`${miembro.user.id}`)`, inline: true },
+            { name: '👤 Usuario', value: `${miembro.user} (\`${miembro.user.id}\`)`, inline: true },
             { name: '🛡️ Moderador', value: `${message.member}`, inline: true },
-            { name: '📋 Razón', value: razon, inline: false },
+            { name: '📋 Razón', value: razon },
           ],
-          footer: { text: message.guild.name, iconURL: message.guild.iconURL() },
+          footer: { text: message.guild.name, iconURL: message.guild.iconURL() ?? undefined },
         })] });
       } catch {
         message.reply({ embeds: [errorEmbed('No pude expulsar al usuario.', message.author)] });
       }
     },
   };
-  
