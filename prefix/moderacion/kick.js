@@ -1,22 +1,39 @@
-export default {
-  nombre: 'kick',
-  descripcion: 'Expulsa a un usuario del servidor.',
-  owner: false,
+import { embed, errorEmbed, COLORS } from '../../utils/embed.js';
 
-  async ejecutar({ message, args }) {
-    if (!message.member.permissions.has('KickMembers'))
-      return message.reply('❌ No tienes permiso para expulsar usuarios.');
+  export default {
+    nombre: 'kick',
+    descripcion: 'Expulsa a un usuario del servidor.',
+    uso: '<@usuario> [razón]',
+    owner: false,
 
-    const miembro = message.mentions.members.first();
-    if (!miembro) return message.reply('❌ Menciona a un usuario para expulsar.');
+    async ejecutar({ message, args }) {
+      if (!message.member.permissions.has('KickMembers'))
+        return message.reply({ embeds: [errorEmbed('No tienes permiso para expulsar usuarios.', message.author)] });
 
-    const razon = args.slice(1).join(' ') || 'Sin razón especificada';
+      const miembro = message.mentions.members.first();
+      if (!miembro)
+        return message.reply({ embeds: [errorEmbed('Menciona a un usuario para expulsar.', message.author)] });
 
-    try {
-      await miembro.kick(razon);
-      message.channel.send(`👢 **${miembro.user.tag}** ha sido expulsado. Razón: *${razon}*`);
-    } catch {
-      message.reply('❌ No pude expulsar a ese usuario.');
-    }
-  },
-};
+      if (!miembro.kickable)
+        return message.reply({ embeds: [errorEmbed('No puedo expulsar a ese usuario (rol superior o igual al mío).', message.author)] });
+
+      const razon = args.slice(1).join(' ') || 'Sin razón especificada';
+
+      try {
+        await miembro.kick(razon);
+        message.channel.send({ embeds: [embed({
+          title: '👢 Usuario Expulsado',
+          color: COLORS.mod,
+          fields: [
+            { name: '👤 Usuario', value: `${miembro.user} (`${miembro.user.id}`)`, inline: true },
+            { name: '🛡️ Moderador', value: `${message.member}`, inline: true },
+            { name: '📋 Razón', value: razon, inline: false },
+          ],
+          footer: { text: message.guild.name, iconURL: message.guild.iconURL() },
+        })] });
+      } catch {
+        message.reply({ embeds: [errorEmbed('No pude expulsar al usuario.', message.author)] });
+      }
+    },
+  };
+  
