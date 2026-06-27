@@ -1,22 +1,37 @@
-export default {
-  nombre: 'ban',
-  descripcion: 'Banea a un usuario del servidor.',
-  owner: false,
+import { embed, errorEmbed, COLORS } from '../../utils/embed.js';
 
-  async ejecutar({ message, args }) {
-    if (!message.member.permissions.has('BanMembers'))
-      return message.reply('❌ No tienes permiso para banear usuarios.');
+  export default {
+    nombre: 'ban',
+    descripcion: 'Banea a un usuario del servidor.',
+    uso: '<@usuario> [razón]',
+    owner: false,
 
-    const miembro = message.mentions.members.first();
-    if (!miembro) return message.reply('❌ Menciona a un usuario para banear.');
+    async ejecutar({ message, args }) {
+      if (!message.member.permissions.has('BanMembers'))
+        return message.reply({ embeds: [errorEmbed('No tienes permiso para banear usuarios.', message.author)] });
 
-    const razon = args.slice(1).join(' ') || 'Sin razón especificada';
+      const miembro = message.mentions.members.first();
+      if (!miembro)
+        return message.reply({ embeds: [errorEmbed('Menciona a un usuario para banear.', message.author)] });
 
-    try {
-      await miembro.ban({ reason: razon });
-      message.channel.send(`🔨 **${miembro.user.tag}** ha sido baneado. Razón: *${razon}*`);
-    } catch {
-      message.reply('❌ No pude banear a ese usuario. Verifica mis permisos.');
-    }
-  },
-};
+      if (!miembro.bannable)
+        return message.reply({ embeds: [errorEmbed('No puedo banear a ese usuario (su rol es igual o superior al mío).', message.author)] });
+
+      const razon = args.slice(1).join(' ') || 'Sin razón especificada';
+      try {
+        await miembro.ban({ reason: razon });
+        message.channel.send({ embeds: [embed({
+          title: '🔨 Usuario Baneado',
+          color: COLORS.error,
+          fields: [
+            { name: '👤 Usuario', value: `${miembro.user} (\`${miembro.user.id}\`)`, inline: true },
+            { name: '🛡️ Moderador', value: `${message.member}`, inline: true },
+            { name: '📋 Razón', value: razon },
+          ],
+          footer: { text: message.guild.name, iconURL: message.guild.iconURL() ?? undefined },
+        })] });
+      } catch {
+        message.reply({ embeds: [errorEmbed('No pude banear al usuario. Verifica mis permisos.', message.author)] });
+      }
+    },
+  };
